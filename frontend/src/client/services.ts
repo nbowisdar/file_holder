@@ -442,6 +442,31 @@ export class ItemsService {
     })
   }
 
+  export class FilesService {
+    /**
+     * Read Items
+     * Retrieve items.
+     * @returns ItemsPublic Successful Response
+     * @throws ApiError
+     */
+    public static readFiles(
+      data: TDataReadItems = {},
+    ): CancelablePromise<ItemsPublic> {
+      const { limit = 100, skip = 0 } = data
+      return __request(OpenAPI, {
+        method: "GET",
+        url: "/api/v1/files/",
+        query: {
+          skip,
+          limit,
+        },
+        errors: {
+          422: `Validation Error`,
+        },
+      })
+    }
+
+
   /**
    * Create Item
    * Create new item.

@@ -2,7 +2,8 @@ import shutil
 
 from fastapi import APIRouter, HTTPException, UploadFile
 from fastapi.responses import FileResponse
-from sqlmodel import Session
+from sqlalchemy import func
+from sqlmodel import Session, select
 
 from app import models as md
 from app.api.deps import CurrentSuperUser, CurrentUser, SessionDep
@@ -42,6 +43,31 @@ def download_file(session: SessionDep, user: CurrentUser, file_id: int):
         return FileResponse(file_out, media_type="image/png")
     return HTTPException(status_code=404, detail="File not found")
 
+@router.get("/", response_model=md.FilesPublic)
+def read_files(
+    session: SessionDep, current_user: CurrentUser, skip: int = 0, limit: int = 3
+):
+    if current_user.is_superuser:
+        count_statement = select(func.count()).select_from(md.File)
+        count = session.exec(count_statement).one()
+        statement = select(md.File).offset(skip).limit(limit)
+        items = session.exec(statement).all()
+    else:
+        count_statement = (
+            select(func.count())
+            .select_from(md.File)
+            .where(md.File.owner_id == current_user.id)
+        )
+        count = session.exec(count_statement).one()
+        statement = (
+            select(md.File)
+            .where(md.File.owner_id == current_user.id)
+            .offset(skip)
+            .limit(limit)
+        )
+        items = session.exec(statement).all()
+
+    return md.FilesPublic(data=items, count=count)
 
 @router.post("/", response_model=md.FilePublic)
 async def upload_file(
@@ -49,7 +75,7 @@ async def upload_file(
     _: CurrentSuperUser,
     file: UploadFile,
 ):
-    db_obj = md.File()
+    db_obj = md.File(size=file.size, name=file.filename)
     session.add(db_obj)
     session.commit()
     session.refresh(db_obj)

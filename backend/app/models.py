@@ -1,3 +1,4 @@
+from datetime import datetime
 from functools import partial
 
 from sqlmodel import Field, Relationship, SQLModel
@@ -14,8 +15,13 @@ class UserFileLink(SQLModel, table=True):
     file_id: int | None = Field(default=None, foreign_key="file.id", primary_key=True)
 
 
+class Base(SQLModel):
+    created_at: datetime = Field(default=datetime.utcnow(), nullable=False)
+    last_edited: datetime = Field(default_factory=datetime.utcnow, nullable=False)
+
+
 # Shared properties
-class UserBase(SQLModel):
+class UserBase(Base, SQLModel):
     username: str = Field(unique=True, max_length=40, index=True)
     is_active: bool = True
     is_superuser: bool = False
@@ -119,24 +125,20 @@ class ItemsPublic(SQLModel):
 """Files"""
 
 
-# class FileBase(SQLModel):
-#     file_path: str = Field(max_length=255)
-
-
-# class FileCreate(FileBase):
-#     pass
-
-
-class File(SQLModel, table=True):
-    id: int = Field(default=None, primary_key=True)
+class FileBase(Base):
     download_count: int = Field(default=0)
+    size: float
+    name: str
+
+
+class File(FileBase, table=True):
+    id: int = Field(default=None, primary_key=True)
     users: list["User"] = Relationship(back_populates="files", link_model=UserFileLink)
 
 
 # Properties to return via API, id is always required
-class FilePublic(SQLModel):
+class FilePublic(FileBase):
     id: int
-    download_count: int
 
 
 class FilesPublic(SQLModel):
