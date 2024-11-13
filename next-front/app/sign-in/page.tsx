@@ -1,5 +1,5 @@
 "use client"
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -8,15 +8,19 @@ import Link from 'next/link'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
 import { AlertDestructive } from '@/components/custom/AlertDestructive'
+import useAuthRedirect from '@/hooks/useAuthRedirect'
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL as string;
 
 export default function SignIn() {
+  useAuthRedirect()
+
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [errMsg, setErrMsg] = useState('')
-  
   const { push } = useRouter();
+  
+
   const handleSubmit = (e: React.FormEvent) => {
     setErrMsg("")
     e.preventDefault()
@@ -32,7 +36,14 @@ export default function SignIn() {
     }})
       .then(function (response) {
         localStorage.setItem("token", response.data.access_token);
-        push('/dashboard');
+        localStorage.setItem("is_superuser", response.data.is_superuser);
+        if (response.data.is_superuser) {
+          console.log("admin");
+          push('/admin');
+        } else {
+          console.log("user");
+          push('/files');
+        }
 
       })
       .catch(function (error) {

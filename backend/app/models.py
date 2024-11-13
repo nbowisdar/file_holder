@@ -75,6 +75,7 @@ class Message(SQLModel):
 class Token(SQLModel):
     access_token: str
     token_type: str = "bearer"
+    is_superuser: bool = False
 
 
 # Contents of JWT token
