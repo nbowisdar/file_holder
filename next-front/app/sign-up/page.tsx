@@ -10,7 +10,7 @@ import { baseUrl } from '../config'
 import { redirect } from 'next/navigation'
 import { AlertDestructive } from '@/components/custom/AlertDestructive'
 import { useRouter } from 'next/navigation';
-import useAuthRedirect from '@/hooks/useAuthRedirect'
+import useAuthRedirect from '@/components/hooks/useAuthRedirect'
 
 export default function SignUp() {
   useAuthRedirect()

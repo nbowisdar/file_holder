@@ -5,6 +5,7 @@ from fastapi.responses import FileResponse
 from sqlalchemy import func
 from sqlmodel import Session, select
 
+from app import crud
 from app import models as md
 from app.api.deps import CurrentSuperUser, CurrentUser, SessionDep
 from app.core.config import UPLOAD_DIR
@@ -43,14 +44,15 @@ def download_file(session: SessionDep, user: CurrentUser, file_id: int):
         return FileResponse(file_out, media_type="image/png")
     return HTTPException(status_code=404, detail="File not found")
 
+
 @router.get("/", response_model=md.FilesPublic)
 def read_files(
-    session: SessionDep, current_user: CurrentUser, skip: int = 0, limit: int = 3
+    session: SessionDep, current_user: CurrentUser, offset: int = 0, limit: int = 3
 ):
     if current_user.is_superuser:
         count_statement = select(func.count()).select_from(md.File)
         count = session.exec(count_statement).one()
-        statement = select(md.File).offset(skip).limit(limit)
+        statement = select(md.File).offset(offset).limit(limit)
         items = session.exec(statement).all()
     else:
         count_statement = (
@@ -62,12 +64,13 @@ def read_files(
         statement = (
             select(md.File)
             .where(md.File.owner_id == current_user.id)
-            .offset(skip)
+            .offset(offset)
             .limit(limit)
         )
         items = session.exec(statement).all()
 
     return md.FilesPublic(data=items, count=count)
+
 
 @router.post("/", response_model=md.FilePublic)
 async def upload_file(
@@ -97,21 +100,16 @@ def drop_file(session: SessionDep, file_id: int, _: CurrentSuperUser):
     session.delete(db_file)
 
 
-# @router.get("/access", status_code=204)
-# def access(session: SessionDep, file_id: int, _: CurrentSuperUser):
-#     print("check files access")
-
-
 @router.patch("/access", status_code=204)
 def change_access(
     session: SessionDep,
     file_id: int,
-    user_id: int,
+    username: str,
     has_access: bool,
     _: CurrentSuperUser,
 ):
     db_file = get_db_obj_or_err(session, file_id, md.File)
-    db_user = get_db_obj_or_err(session, user_id, md.User)
+    db_user = crud.get_user_by_username(session=session, username=username)
 
     if has_access:
         db_file.users.append(db_user)

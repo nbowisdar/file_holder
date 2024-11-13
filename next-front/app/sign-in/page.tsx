@@ -8,7 +8,7 @@ import Link from 'next/link'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
 import { AlertDestructive } from '@/components/custom/AlertDestructive'
-import useAuthRedirect from '@/hooks/useAuthRedirect'
+import useAuthRedirect from '@/components/hooks/useAuthRedirect'
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL as string;
 

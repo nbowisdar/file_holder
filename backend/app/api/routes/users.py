@@ -1,4 +1,3 @@
-import uuid
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -31,15 +30,23 @@ router = APIRouter()
     dependencies=[Depends(get_current_active_superuser)],
     response_model=UsersPublic,
 )
-def read_users(session: SessionDep, skip: int = 0, limit: int = 100) -> Any:
+def read_users(
+    session: SessionDep, offset: int = 0, limit: int = 100, search: str = ""
+) -> Any:
     """
     Retrieve users.
     """
 
-    count_statement = select(func.count()).select_from(User)
+    count_statement = (
+        select(func.count()).select_from(User).where(User.username.like(f"%{search}%"))
+    )
     count = session.exec(count_statement).one()
-
-    statement = select(User).offset(skip).limit(limit)
+    statement = (
+        select(User)
+        .where(User.username.like(f"%{search}%"))
+        .offset(offset)
+        .limit(limit)
+    )
     users = session.exec(statement).all()
 
     return UsersPublic(data=users, count=count)

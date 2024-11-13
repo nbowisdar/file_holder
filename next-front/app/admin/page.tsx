@@ -11,10 +11,11 @@ import axiosClient from '@/lib/axiosClient'
 import { parseAsInteger, useQueryState } from "nuqs";
 import { useSearchParams } from 'next/navigation'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Combobox } from '@/components/custom/Combobox'
 
 
 type File = {
-  id: string
+  id: number
   name: string
   created_at: string
   size: number | string
@@ -22,13 +23,13 @@ type File = {
 }
 
 type User = {
-  id: string
+  id: number
   name: string
 }
 
 type Permission = {
-  fileId: string
-  userId: string
+  fileId: number
+  userId: number
 }
 
 type SearchParams = {
@@ -89,18 +90,18 @@ export default function AdminDashboard() {
 
 
   const [users, setUsers] = useState<User[]>([
-    { id: '1', name: 'Alice' },
-    { id: '2', name: 'Bob' },
-    { id: '3', name: 'Charlie' },
-    { id: '4', name: 'David' },
-    { id: '5', name: 'Eve' },
+    { id: 1, name: 'Alice' },
+    { id: 2, name: 'Bob' },
+    { id: 3, name: 'Charlie' },
+    { id: 4, name: 'David' },
+    { id: 5, name: 'Eve' },
   ])
 
   const [permissions, setPermissions] = useState<Permission[]>([
-    { fileId: '1', userId: '1' },
-    { fileId: '1', userId: '2' },
-    { fileId: '2', userId: '1' },
-    { fileId: '2', userId: '3' },
+    { fileId: 1, userId: 1 },
+    { fileId: 1, userId: 2 },
+    { fileId: 2, userId: 1 },
+    { fileId: 2, userId: 3 },
   ])
 
   useEffect(() => {
@@ -123,7 +124,7 @@ export default function AdminDashboard() {
     
   }
 
-  const handleDownload = (fileId: string) => {
+  const handleDownload = (fileId: number) => {
     setFiles(files.map(file => 
       file.id === fileId
         ? { ...file, download_count: file.download_count + 1 }
@@ -131,18 +132,18 @@ export default function AdminDashboard() {
     ))
   }
 
-  const getUsersWithAccess = (fileId: string) => {
+  const getUsersWithAccess = (fileId: number) => {
     return users.filter(user => 
       permissions.some(permission => permission.fileId === fileId && permission.userId === user.id)
     )
   }
 
-  const addUserAccess = (fileId: string, userId: string) => {
+  const addUserAccess = (fileId: number, userId: number) => {
     setPermissions([...permissions, { fileId, userId }])
     setSearchTerm('')
   }
 
-  const removeUserAccess = (fileId: string, userId: string) => {
+  const removeUserAccess = (fileId: number, userId: number) => {
     setPermissions(permissions.filter(
       permission => !(permission.fileId === fileId && permission.userId === userId)
     ))
@@ -243,13 +244,14 @@ export default function AdminDashboard() {
                               <h3 className="mb-2 font-semibold">Add User Access</h3>
                               <div className="flex items-center space-x-2">
                                 <div className="relative w-full">
-                                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Combobox fileId={file.id}/>
+                                  {/* <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                                   <Input
                                     placeholder="Search users"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     className="pl-8"
-                                  />
+                                  /> */}
                                 </div>
                               </div>
                               {searchTerm && (
