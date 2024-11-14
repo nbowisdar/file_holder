@@ -33,28 +33,30 @@ const Navbar = () => {
     };
 
   return (
-    <>
-      <div className="w-full h-20 bg-emerald-800 sticky top-0">
-        <div className="container mx-auto px-4 h-full">
-          <div className="flex justify-between items-center h-full">
-            <ul className="hidden md:flex gap-x-6 text-white">
-              <li>
-                <Link href="/about">
-                  <p>Files</p>
-                </Link>
-              </li>
-              <li>
-                <Link href="/services">
-                  <p>Admin Dashboard</p>
-                </Link>
-              </li>
-            </ul>
-            <Button onClick={handleLogIn} type="submit">{loginText}</Button>
-          </div>
-        </div>
-      </div>
-    </>
-  );
+		<>
+			<div className="w-full h-20 bg-emerald-800 sticky top-0">
+				<div className="container mx-auto px-4 h-full">
+					<div className="flex justify-between items-center h-full">
+						<ul className="hidden md:flex gap-x-6 text-white">
+							<li>
+								<Link href="/files">
+									<p>Files</p>
+								</Link>
+							</li>
+							<li>
+								<Link href="/admin">
+									<p>Admin Dashboard</p>
+								</Link>
+							</li>
+						</ul>
+						<Button onClick={handleLogIn} type="submit">
+							{loginText}
+						</Button>
+					</div>
+				</div>
+			</div>
+		</>
+	)
 };
 
 export default Navbar;
