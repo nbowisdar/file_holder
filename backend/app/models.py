@@ -53,6 +53,7 @@ class User(UserBase, table=True):
     id: int = Field(default=None, primary_key=True)
     hashed_password: str
     items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
+
     files: list["File"] = Relationship(back_populates="users", link_model=UserFileLink)
 
 
@@ -134,12 +135,17 @@ class FileBase(Base):
 
 class File(FileBase, table=True):
     id: int = Field(default=None, primary_key=True)
+
     users: list["User"] = Relationship(back_populates="files", link_model=UserFileLink)
 
 
 # Properties to return via API, id is always required
 class FilePublic(FileBase):
     id: int
+
+
+class FilePublicUsers(FilePublic):
+    users: list[UserPublic]
 
 
 class FilesPublic(SQLModel):

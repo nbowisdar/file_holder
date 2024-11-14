@@ -39,7 +39,13 @@ const FormSchema = z.object({
 	}),
 })
 
-export function Combobox({fileId}: {fileId: number}) {
+export function Combobox({
+	fileId,
+	loadUsers,
+}: {
+	fileId: number
+	loadUsers: () => void
+}) {
 	const [users, setUsers] = useState([])
 	const [usersSearch, setUsersSearch] = useQueryState("usersSearch", {
 		defaultValue: "",
@@ -58,9 +64,20 @@ export function Combobox({fileId}: {fileId: number}) {
 	})
 
 	function onSubmit(data: z.infer<typeof FormSchema>) {
-    axiosClient.patch<{data: File[], count: number}>('/files/access', 
-      {}, {params: {file_id: fileId, username: data.username, has_access: true}},
-    ).catch((err) => console.log(err))
+		axiosClient
+			.patch<{ data: File[]; count: number }>(
+				"/files/access",
+				{},
+				{
+					params: {
+						file_id: fileId,
+						username: data.username,
+						has_access: true,
+					},
+				}
+			)
+			.then((res) => loadUsers())
+			.catch((err) => console.log(err))
 	}
 
 	return (

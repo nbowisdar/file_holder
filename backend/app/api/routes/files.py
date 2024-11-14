@@ -45,6 +45,11 @@ def download_file(session: SessionDep, user: CurrentUser, file_id: int):
     return HTTPException(status_code=404, detail="File not found")
 
 
+@router.get("/info/{file_id}", response_model=md.FilePublicUsers)
+def get_file_info(session: SessionDep, _: CurrentSuperUser, file_id: int):
+    return get_db_obj_or_err(session, file_id, md.File)
+
+
 @router.get("/", response_model=md.FilesPublic)
 def read_files(
     session: SessionDep, current_user: CurrentUser, offset: int = 0, limit: int = 3

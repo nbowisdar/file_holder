@@ -15,17 +15,16 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table"
+import axiosClient from "@/lib/axiosClient"
 import { Download, File as FileIcon, Plus, X } from "lucide-react"
+import { useEffect, useState } from "react"
 
-// type File = {
-// 	id: number
-// 	name: string
-// 	created_at: string
-// 	size: number | string
-// 	download_count: number
-// }
+type User = {
+	id: number
+	username: string
+}
 
-interface File {
+type File = {
 	id: number
 	name: string
 	created_at: string
@@ -34,36 +33,30 @@ interface File {
 }
 
 const AdminDetail = ({ file }: { file: File }) => {
-	function setSelectedFile(file: any) {
-		console.log("Function not implemented.")
+	const [users, setUsers] = useState<User[]>([])
+
+	const removeUserAccess = (fileId: number, username: string) => {
+		axiosClient
+			.patch<{ data: File[]; count: number }>(
+				"/files/access",
+				{},
+				{ params: { file_id: fileId, username: username, has_access: false } }
+			)
+			.then((res) => loadUsers())
+			.catch((err) => console.log(err))
 	}
 
-	const handleDownload = (fileId: number) => {
-		console.log("Download")
+	function loadUsers() {
+		console.log("loading users")
+		axiosClient
+			.get<{ users: User[] }>(`/files/info/${file.id}`)
+			.then((res) => setUsers(res.data.users))
 	}
-
-	function setSearchTerm(arg0: string) {
-		throw new Error("Function not implemented.")
-	}
-
-	type User = {
-		id: number
-		username: string
-	}
-
-	const users: User[] = []
-
-	const removeUserAccess = (fileId: number, userId: number) => {
-		console.log("Remove user access")
-	}
-	const addUserAccess = (fileId: number, userId: number) => {
-		// setPermissions([...permissions, { fileId, userId }])
-		// setSearchTerm("")
-		console.log("Add user access")
-	}
-
+	useEffect(() => {
+		loadUsers()
+	}, [])
 	return (
-		<div className="flex space-x-2">
+		<>
 			<Dialog>
 				<DialogTrigger asChild>
 					<Button variant="outline" size="sm">
@@ -91,7 +84,7 @@ const AdminDetail = ({ file }: { file: File }) => {
 											<Button
 												variant="outline"
 												size="sm"
-												onClick={() => removeUserAccess(file.id, user.id)}
+												onClick={() => removeUserAccess(file.id, user.username)}
 											>
 												<X className="h-4 w-4" /> Remove
 											</Button>
@@ -104,44 +97,14 @@ const AdminDetail = ({ file }: { file: File }) => {
 							<h3 className="mb-2 font-semibold">Add User Access</h3>
 							<div className="flex items-center space-x-2">
 								<div className="relative w-full">
-									<Combobox fileId={file.id} />
-									{/* <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                                  <Input
-                                    placeholder="Search users"
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="pl-8"
-                                  /> */}
+									<Combobox fileId={file.id} loadUsers={loadUsers} />
 								</div>
 							</div>
-							{/* {searchTerm && (
-								<ul className="mt-2 max-h-40 overflow-auto border rounded-md">
-									{searchResults.map((user) => (
-										<li
-											key={user.id}
-											className="p-2 hover:bg-muted cursor-pointer flex justify-between items-center"
-											onClick={() => addUserAccess(file.id, user.id)}
-										>
-											{user.name}
-											<Button size="sm" variant="ghost">
-												<Plus className="h-4 w-4" />
-											</Button>
-										</li>
-									))}
-								</ul>
-							)} */}
 						</div>
 					</div>
 				</DialogContent>
 			</Dialog>
-			<Button
-				variant="outline"
-				size="sm"
-				onClick={() => handleDownload(file.id)}
-			>
-				<Download className="mr-2 h-4 w-4" /> Download
-			</Button>
-		</div>
+		</>
 	)
 }
 

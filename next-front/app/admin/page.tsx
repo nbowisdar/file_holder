@@ -55,22 +55,11 @@ type File = {
 	download_count: number
 }
 
-type User = {
-	id: number
-	name: string
-}
-
-type Permission = {
-	fileId: number
-	userId: number
-}
 
 // export default function AdminDashboard({page}: SearchParams ) {
 export default function AdminDashboard() {
 	const [files, setFiles] = useState<File[]>([])
-	const [selectedFile, setSelectedFile] = useState<File | null>(null)
-	const [searchTerm, setSearchTerm] = useState("")
-	const [searchResults, setSearchResults] = useState<User[]>([])
+
 
 	const [itemsPerPage, setItemsPerPage] = useQueryState(
 		"totalItems",
@@ -101,34 +90,6 @@ export default function AdminDashboard() {
 			.finally(() => {})
 	}, [page, itemsPerPage])
 
-	const [users, setUsers] = useState<User[]>([
-		{ id: 1, name: "Alice" },
-		{ id: 2, name: "Bob" },
-		{ id: 3, name: "Charlie" },
-		{ id: 4, name: "David" },
-		{ id: 5, name: "Eve" },
-	])
-
-	const [permissions, setPermissions] = useState<Permission[]>([
-		{ fileId: 1, userId: 1 },
-		{ fileId: 1, userId: 2 },
-		{ fileId: 2, userId: 1 },
-		{ fileId: 2, userId: 3 },
-	])
-
-	useEffect(() => {
-		const results = users.filter(
-			(user) =>
-				user.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-				(!selectedFile ||
-					!permissions.some(
-						(permission) =>
-							permission.fileId === selectedFile.id &&
-							permission.userId === user.id
-					))
-		)
-		setSearchResults(results)
-	}, [searchTerm, users, permissions, selectedFile])
 
 	function improveFile(file: File) {
 		file.created_at = new Date(file.created_at).toISOString().split("T")[0]
@@ -149,14 +110,6 @@ export default function AdminDashboard() {
 		)
 	}
 
-	const getUsersWithAccess = (fileId: number) => {
-		return users.filter((user) =>
-			permissions.some(
-				(permission) =>
-					permission.fileId === fileId && permission.userId === user.id
-			)
-		)
-	}
 
 	return (
 		<div className="container mx-auto p-4 space-y-6">
@@ -203,7 +156,16 @@ export default function AdminDashboard() {
 									<TableCell>{file.size}</TableCell>
 									<TableCell>{file.download_count}</TableCell>
 									<TableCell>
-										<AdminDetail file={file} />
+										<div className="flex space-x-2">
+											<AdminDetail file={file} />
+											<Button
+												variant="outline"
+												size="sm"
+												onClick={() => handleDownload(file.id)}
+											>
+												<Download className="mr-2 h-4 w-4" /> Download
+											</Button>
+										</div>
 									</TableCell>
 								</TableRow>
 							))}
