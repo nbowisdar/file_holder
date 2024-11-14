@@ -44,18 +44,3 @@ def authenticate(*, session: Session, username: str, password: str) -> md.User |
         return None
     return db_user
 
-
-# def get_file_and_users(*, session: Session, file_id: int) -> md.FilePublicUsers | None:
-#     stm = (
-#         select(md.FilePublic)
-#         .join(md.UserPublic)
-#         .where(md.FilePublicUsers.id == file_id)
-#     )
-# db_book = (
-#     session.exec(md.FilePublic)
-#     .options(joinedload(Book.authors))
-#     .where(Book.id == id)
-#     .one()
-# )
-
-# db_obj = session.get(md.FilePublicUsers, file_id)

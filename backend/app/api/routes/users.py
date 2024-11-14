@@ -1,7 +1,7 @@
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import col, delete, func, select
+from sqlmodel import func, select
 
 from app import crud
 from app.api.deps import (
@@ -11,7 +11,6 @@ from app.api.deps import (
 )
 from app.core.security import get_password_hash, verify_password
 from app.models import (
-    Item,
     Message,
     UpdatePassword,
     User,
@@ -107,8 +106,6 @@ def delete_user_me(session: SessionDep, current_user: CurrentUser) -> Any:
         raise HTTPException(
             status_code=403, detail="Super users are not allowed to delete themselves"
         )
-    statement = delete(Item).where(col(Item.owner_id) == current_user.id)
-    session.exec(statement)  # type: ignore
     session.delete(current_user)
     session.commit()
     return Message(message="User deleted successfully")
@@ -170,7 +167,9 @@ def update_user(
             detail="The user with this id does not exist in the system",
         )
     if user_in.username:
-        existing_user = crud.get_user_by_username(session=session, username=user_in.username)
+        existing_user = crud.get_user_by_username(
+            session=session, username=user_in.username
+        )
         if existing_user and existing_user.id != user_id:
             raise HTTPException(
                 status_code=409, detail="User with this username already exists"
@@ -194,8 +193,6 @@ def delete_user(
         raise HTTPException(
             status_code=403, detail="Super users are not allowed to delete themselves"
         )
-    statement = delete(Item).where(col(Item.owner_id) == user_id)
-    session.exec(statement)  # type: ignore
     session.delete(user)
     session.commit()
     return Message(message="User deleted successfully")
