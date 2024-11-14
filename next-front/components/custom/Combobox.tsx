@@ -58,8 +58,6 @@ export function Combobox({fileId}: {fileId: number}) {
 	})
 
 	function onSubmit(data: z.infer<typeof FormSchema>) {
-		console.log(data.username)
-		console.log(fileId)
     axiosClient.patch<{data: File[], count: number}>('/files/access', 
       {}, {params: {file_id: fileId, username: data.username, has_access: true}},
     ).catch((err) => console.log(err))
