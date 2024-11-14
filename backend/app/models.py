@@ -52,7 +52,6 @@ class UpdatePassword(SQLModel):
 class User(UserBase, table=True):
     id: int = Field(default=None, primary_key=True)
     hashed_password: str
-    items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
 
     files: list["File"] = Relationship(back_populates="users", link_model=UserFileLink)
 

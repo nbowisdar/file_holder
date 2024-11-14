@@ -6,33 +6,35 @@ import { Button } from "../ui/button";
 import { useRouter } from 'next/router';
 
 const Navbar = () => {
-    // const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [loginText, setLoginText] = useState("Log In");
+	// const [isAuthenticated, setIsAuthenticated] = useState(false);
+	const [loginText, setLoginText] = useState("Log In")
+	// let is_admin = localStorage.getItem("is_superuser")
 
-    // const router = useRouter();
-    useEffect(() => {   
-        const token = localStorage.getItem("token");
-        if (token) {
-            setLoginText("Log Out");
-        } else {
-            setLoginText("Log In");
-        } 
-    });
+	// const router = useRouter();
+	useEffect(() => {
+		const token = localStorage.getItem("token")
+		if (token) {
+			setLoginText("Log Out")
+		} else {
+			setLoginText("Log In")
+		}
+	})
 
-    const handleLogIn = () => {
-        const token = localStorage.getItem("token");
-        if (token) { 
-            localStorage.removeItem("token");
-            setLoginText("Sign In");
-            console.log("token removed");
-        } 
-        if (!window.location.href.includes("/sign-in")) {
-            console.log(window.location.href);
-            window.location.href = "/sign-in";            
-        } 
-    };
+	const handleLogIn = () => {
+		const token = localStorage.getItem("token")
+		if (token) {
+			localStorage.removeItem("token")
+			localStorage.removeItem("is_superuser")
+			setLoginText("Sign In")
+			console.log("token removed")
+		}
+		if (!window.location.href.includes("/sign-in")) {
+			console.log(window.location.href)
+			window.location.href = "/sign-in"
+		}
+	}
 
-  return (
+	return (
 		<>
 			<div className="w-full h-20 bg-emerald-800 sticky top-0">
 				<div className="container mx-auto px-4 h-full">
@@ -43,11 +45,13 @@ const Navbar = () => {
 									<p>Files</p>
 								</Link>
 							</li>
-							<li>
-								<Link href="/admin">
-									<p>Admin Dashboard</p>
-								</Link>
-							</li>
+							{localStorage.getItem("is_superuser") && (
+								<li>
+									<Link href="/admin">
+										<p>Admin Dashboard</p>
+									</Link>
+								</li>
+							)}
 						</ul>
 						<Button onClick={handleLogIn} type="submit">
 							{loginText}

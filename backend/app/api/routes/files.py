@@ -63,12 +63,15 @@ def read_files(
         count_statement = (
             select(func.count())
             .select_from(md.File)
-            .where(md.File.owner_id == current_user.id)
+            .join(md.File.users)
+            .where(md.User.id == current_user.id)
         )
         count = session.exec(count_statement).one()
+
         statement = (
             select(md.File)
-            .where(md.File.owner_id == current_user.id)
+            .join(md.File.users)
+            .where(md.User.id == current_user.id)
             .offset(offset)
             .limit(limit)
         )
