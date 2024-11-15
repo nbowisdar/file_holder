@@ -16,7 +16,7 @@ import {
 	TableRow,
 } from "@/components/ui/table"
 import axiosClient from "@/lib/axiosClient"
-import { Download, File as FileIcon, Plus, X } from "lucide-react"
+import { File as FileIcon, X } from "lucide-react"
 import { useEffect, useState } from "react"
 
 type User = {

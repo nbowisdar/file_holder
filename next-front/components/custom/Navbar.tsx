@@ -1,18 +1,16 @@
-"use client";
+"use client"
 
-import React, { use, useEffect, useState } from "react";
-import Link from "next/link";
-import { Button } from "../ui/button";
-import { useRouter } from 'next/router';
+import Link from "next/link"
+import { useEffect, useState } from "react"
+import { Button } from "../ui/button"
 
 const Navbar = () => {
-	// const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [loginText, setLoginText] = useState("Log In")
-	// let is_admin = localStorage.getItem("is_superuser")
+	const [isSuperuser, setIsSuperuser] = useState<string | null>("false")
 
-	// const router = useRouter();
 	useEffect(() => {
 		const token = localStorage.getItem("token")
+		setIsSuperuser(localStorage.getItem("is_superuser"))
 		if (token) {
 			setLoginText("Log Out")
 		} else {
@@ -45,7 +43,7 @@ const Navbar = () => {
 									<p>Files</p>
 								</Link>
 							</li>
-							{localStorage.getItem("is_superuser") && (
+							{isSuperuser && (
 								<li>
 									<Link href="/admin">
 										<p>Admin Dashboard</p>
@@ -61,6 +59,6 @@ const Navbar = () => {
 			</div>
 		</>
 	)
-};
+}
 
-export default Navbar;
+export default Navbar

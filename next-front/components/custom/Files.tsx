@@ -1,5 +1,6 @@
+"use client"
+
 import DetailAdmin from "@/components/custom/DetailAdmin"
-import FileUpload from "@/components/custom/FileUpload"
 import { Button } from "@/components/ui/button"
 import {
 	Card,
@@ -137,7 +138,6 @@ const Files = ({ isAdmin = false }: { isAdmin: boolean }) => {
 									<TableCell>
 										<div className="flex space-x-2">
 											{isAdmin && <DetailAdmin file={file} />}
-											{/* <DetailAdmin file={file} /> */}
 											<Button
 												variant="outline"
 												size="sm"

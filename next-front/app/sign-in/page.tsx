@@ -17,7 +17,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
-export default function page() {
+export default function Page() {
 	useAuthRedirect()
 
 	const [username, setUsername] = useState("")
@@ -35,7 +35,7 @@ export default function page() {
 		formData.append("password", password)
 		formData.append("grant_type", "password")
 		axiosClient
-			.post(`$/login/access-token`, formData, {
+			.post(`/login/access-token`, formData, {
 				headers: {
 					"Content-Type": "multipart/form-data",
 				},
@@ -96,7 +96,7 @@ export default function page() {
 							Sign In
 						</Button>
 						<p className="text-sm text-center text-gray-600">
-							Don't have an account?
+							Don&apos;t have an account?
 							<Link
 								href="/sign-up"
 								className="text-blue-600 hover:underline ml-1"

@@ -5,7 +5,6 @@ import { Check, ChevronsUpDown } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
 	Command,
@@ -18,7 +17,6 @@ import {
 import {
 	Form,
 	FormControl,
-	FormDescription,
 	FormField,
 	FormItem,
 	FormLabel,
@@ -30,8 +28,9 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover"
 import axiosClient from "@/lib/axiosClient"
-import { useEffect, useState } from "react"
+import { cn } from "@/lib/utils"
 import { useQueryState } from "nuqs"
+import { useEffect, useState } from "react"
 
 const FormSchema = z.object({
 	username: z.string({

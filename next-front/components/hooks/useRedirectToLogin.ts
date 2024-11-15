@@ -1,6 +1,12 @@
+"use client"
+
+import { useEffect } from "react"
+
 export default function useRedirectToLogin() {
-	const token = localStorage.getItem("token")
-	if (!token) {
-		window.location.href = "/sign-in"
-	}
+	useEffect(() => {
+		const token = localStorage.getItem("token")
+		if (!token) {
+			window.location.href = "/sign-in"
+		}
+	})
 }
